@@ -13,7 +13,7 @@ Alarm- A loud obnoctious alarm to ensure anyone in the house knows that a proble
 
 Text alert functionality- When the sensor detects a hazard, an SMS alert will be sent to the users phone warning them of the situation even if they are away from home.
 
-Power kill on alarm- When a hazard is detected, power to electronics (3d printer, Soldering iron, other electronic tools) that could be cuasing the hazard.
+Power kill on alarm- When a hazard is detected, power to electronics (3d printer, Soldering iron, other electronic tools) is cut. This may minimize the damage or even stop electrical fire related hazards.
 
 Snoozable- Hit button to disarm the sensor for a period of time. Useful for when smoke is expected or the source of the smoke has been taken care of. Sensor will re-arm after a designated period.
 
