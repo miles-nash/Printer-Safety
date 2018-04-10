@@ -1,0 +1,49 @@
+int time1 = 280;
+int time2 = 40;
+int time3 = 9680;
+int ledSensePin = 12; //led turns on and off the 
+int sensorPin = 5;
+int alarmPin = 8;
+int duration = 1000;
+float voltage,voltageCalc,airQuality = 0;
+bool hazard = false;
+void setup() {
+  Serial.begin(9600);
+  pinMode(ledSensePin,OUTPUT);
+  pinMode(alarmPin,OUTPUT);
+}
+
+void loop() {
+  digitalWrite(ledSensePin, LOW); //turn on sensor
+  delayMicroseconds(time1);
+  voltage = analogRead(sensorPin);
+  delayMicroseconds(time2);
+  digitalWrite(ledSensePin, HIGH); //turn off sensor
+  delayMicroseconds(time3);
+  Serial.println(voltage);
+  
+  if(voltage >= 550){//if the voltage coming from the sensor is to high, a hazard is present
+    hazard = true;
+  }
+
+  while(hazard == true){
+    //relay
+    tone(alarmPin, 100);
+    delay(duration);
+    noTone(alarmPin);
+    delay(duration);
+     tone(alarmPin, 100);
+    delay(duration);
+    noTone(alarmPin);
+    delay(duration);
+     tone(alarmPin, 100);
+    delay(duration);
+    noTone(alarmPin);
+    delay(duration*3);
+    if (Serial.read(sensorPin)<550){
+      break;
+    }
+    if
+  }
+  delay(1000);
+}
