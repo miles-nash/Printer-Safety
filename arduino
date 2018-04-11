@@ -1,3 +1,15 @@
+/*
+Printer Safety Gadget Arduino code
+Updated code and more instructions can be found on https://github.com/miles-nash/Printer-Safety/tree/master
+The goal of this project was to create a device that allows 3d printer owners to  feel comftorable leaving their 3d printers running unsuppervised
+It also decreases the likelyhood of an out of control electrical fire and can help to decrease damage.
+ 
+ This work is licensed under the
+ Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+ To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/
+ or send a letter to Creative Commons, 444 Castro Street, Suite 900,
+ Mountain View, California, 94041, USA.
+*/
 int time1 = 280;
 int time2 = 40;
 int time3 = 9680;
@@ -7,6 +19,9 @@ int alarmPin = 8;
 int duration = 1000;
 float voltage,voltageCalc,airQuality = 0;
 bool hazard = false;
+int snoozeTime = 10000;
+int hazardDelay = 10000;
+int lastSnooze,lastHazard;
 void setup() {
   Serial.begin(9600);
   pinMode(ledSensePin,OUTPUT);
@@ -14,6 +29,8 @@ void setup() {
 }
 
 void loop() {
+  //Adapted from a  
+  //http://arduinodev.woofex.net/2012/12/01/standalone-sharp-dust-sensor/ 
   digitalWrite(ledSensePin, LOW); //turn on sensor
   delayMicroseconds(time1);
   voltage = analogRead(sensorPin);
@@ -24,11 +41,16 @@ void loop() {
   
   if(voltage >= 550){//if the voltage coming from the sensor is to high, a hazard is present
     hazard = true;
+    lastHazard = millis();
   }
 
-  while(hazard == true){
+  if(voltage < 500 && (millis() - lastHazard) > hazardDelay){//if the hazard stops and a time has passed, stop alarm
+    hazard = false;
+  }
+
+  if(hazard == true){
     //relay
-    tone(alarmPin, 100);
+    tone(alarmPin, 100);//alarm sequence
     delay(duration);
     noTone(alarmPin);
     delay(duration);
@@ -39,11 +61,7 @@ void loop() {
      tone(alarmPin, 100);
     delay(duration);
     noTone(alarmPin);
-    delay(duration*3);
-    if (Serial.read(sensorPin)<550){
-      break;
-    }
-    if
+    delay(duration*2);
   }
   delay(1000);
 }
