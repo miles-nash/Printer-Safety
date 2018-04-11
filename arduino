@@ -22,15 +22,22 @@ bool hazard = false;
 int snoozeTime = 10000;
 int hazardDelay = 10000;
 int lastSnooze,lastHazard;
+int relay1 = 10;
+int relay2 = 11;
 void setup() {
   Serial.begin(9600);
   pinMode(ledSensePin,OUTPUT);
   pinMode(alarmPin,OUTPUT);
+  pinMode(relay1,OUTPUT);
+  pinMode(relay2,OUTPUT);
+  digitalWrite(relay1,LOW); //the relay linked on github is activated by LOW
+  digitalWrite(relay2,LOW);
 }
 
 void loop() {
-  //Adapted from a  
+  //Adapted from a sketch by Cyrille Médard de Chardon (serialC), Christophe Trefois (Trefex)
   //http://arduinodev.woofex.net/2012/12/01/standalone-sharp-dust-sensor/ 
+ ///////////////////////////////////////////////////////////// 
   digitalWrite(ledSensePin, LOW); //turn on sensor
   delayMicroseconds(time1);
   voltage = analogRead(sensorPin);
@@ -38,7 +45,7 @@ void loop() {
   digitalWrite(ledSensePin, HIGH); //turn off sensor
   delayMicroseconds(time3);
   Serial.println(voltage);
-  
+ ///////////////////////////////////////////////////////////// 
   if(voltage >= 550){//if the voltage coming from the sensor is to high, a hazard is present
     hazard = true;
     lastHazard = millis();
@@ -50,6 +57,8 @@ void loop() {
 
   if(hazard == true){
     //relay
+    digitalWrite(relay1,HIGH); //disigage relay: Turn off printer ect.
+    digitalWrite(relay2,HIGH); // must reset safety host to turn on printer
     tone(alarmPin, 100);//alarm sequence
     delay(duration);
     noTone(alarmPin);
