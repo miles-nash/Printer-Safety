@@ -13,17 +13,18 @@ It also decreases the likelyhood of an out of control electrical fire and can he
 int time1 = 280;
 int time2 = 40;
 int time3 = 9680;
-int ledSensePin = 12; //led turns on and off the 
+int ledSensePin = 11; //led turns on and off the 
 int sensorPin = 5;
 int alarmPin = 8;
+int ledPin = 12;
 int duration = 1000;
 float voltage,voltageCalc,airQuality = 0;
 bool hazard = false;
 int snoozeTime = 10000;
 int hazardDelay = 10000;
 int lastSnooze,lastHazard;
-int relay1 = 10;
-int relay2 = 11;
+int relay1 = 9;
+int relay2 = 10;
 void setup() {
   Serial.begin(9600);
   pinMode(ledSensePin,OUTPUT);
@@ -31,7 +32,7 @@ void setup() {
   pinMode(relay1,OUTPUT);
   pinMode(relay2,OUTPUT);
   digitalWrite(relay1,LOW); //the relay linked on github is activated by LOW
-  digitalWrite(relay2,LOW);
+  digitalWrite(relay2,LOW);//turn on printer
 }
 
 void loop() {
@@ -60,16 +61,22 @@ void loop() {
     digitalWrite(relay1,HIGH); //disigage relay: Turn off printer ect.
     digitalWrite(relay2,HIGH); // must reset safety host to turn on printer
     tone(alarmPin, 100);//alarm sequence
+    digitalWrite(ledPin,HIGH);
     delay(duration);
     noTone(alarmPin);
+    digitalWrite(ledPin,LOW);
     delay(duration);
      tone(alarmPin, 100);
+     digitalWrite(ledPin,HIGH);
     delay(duration);
     noTone(alarmPin);
+    digitalWrite(ledPin,LOW);
     delay(duration);
      tone(alarmPin, 100);
+     digitalWrite(ledPin,HIGH);
     delay(duration);
     noTone(alarmPin);
+    digitalWrite(ledPin,LOW);
     delay(duration*2);
   }
   delay(1000);
