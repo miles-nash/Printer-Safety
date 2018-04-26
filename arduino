@@ -21,10 +21,11 @@ int duration = 1000;
 float voltage,voltageCalc,airQuality = 0;
 bool hazard = false;
 int snoozeTime = 10000;
-int hazardDelay = 10000;
+int hazardDelay = 100000;
 int lastSnooze,lastHazard;
-int relay1 = 9;
-int relay2 = 10;
+int relay1 = 10;
+int relay2 = 9;
+int triggerNumber = 400;
 void setup() {
   Serial.begin(9600);
   pinMode(ledSensePin,OUTPUT);
@@ -47,12 +48,12 @@ void loop() {
   delayMicroseconds(time3);
   Serial.println(voltage);
  ///////////////////////////////////////////////////////////// 
-  if(voltage >= 550){//if the voltage coming from the sensor is to high, a hazard is present
+  if(voltage >= triggerNumber){//if the voltage coming from the sensor is t0o high, a hazard is present
     hazard = true;
     lastHazard = millis();
   }
 
-  if(voltage < 500 && (millis() - lastHazard) > hazardDelay){//if the hazard stops and a time has passed, stop alarm
+  if(voltage < triggerNumber - 50 && (millis() - lastHazard) > hazardDelay){//if the hazard stops and a time has passed, stop alarm
     hazard = false;
   }
 
