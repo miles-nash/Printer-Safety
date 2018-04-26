@@ -1,6 +1,7 @@
 /*
 Printer Safety Gadget Arduino code
-Updated code and more instructions can be found on https://github.com/miles-nash/Printer-Safety/tree/master
+Updated code can be found on https://github.com/miles-nash/Printer-Safety/tree/master
+A full tutorial and more information can be found on https://www.hackster.io/Milesnash_/3d-printer-fire-safety-448acf
 The goal of this project was to create a device that allows 3d printer owners to  feel comftorable leaving their 3d printers running unsuppervised
 It also decreases the likelyhood of an out of control electrical fire and can help to decrease damage.
  
@@ -17,15 +18,13 @@ int ledSensePin = 11; //led turns on and off the
 int sensorPin = 5;
 int alarmPin = 8;
 int ledPin = 12;
-int duration = 1000;
 float voltage,voltageCalc,airQuality = 0;
 bool hazard = false;
-int snoozeTime = 10000;
-int hazardDelay = 100000;
-int lastSnooze,lastHazard;
+int hazardDelay = 10000000000; //The time in milliseconds until the alarm stops
+int lastHazard;
 int relay1 = 10;
 int relay2 = 9;
-int triggerNumber = 400;
+int triggerNumber = 400; //Sensor output required to set off alarm and kill power
 void setup() {
   Serial.begin(9600);
   pinMode(ledSensePin,OUTPUT);
@@ -63,22 +62,22 @@ void loop() {
     digitalWrite(relay2,HIGH); // must reset safety host to turn on printer
     tone(alarmPin, 100);//alarm sequence
     digitalWrite(ledPin,HIGH);
-    delay(duration);
+    delay(1000);
     noTone(alarmPin);
     digitalWrite(ledPin,LOW);
-    delay(duration);
+    delay(1000);
      tone(alarmPin, 100);
      digitalWrite(ledPin,HIGH);
-    delay(duration);
+    delay(1000);
     noTone(alarmPin);
     digitalWrite(ledPin,LOW);
-    delay(duration);
+    delay(1000);
      tone(alarmPin, 100);
      digitalWrite(ledPin,HIGH);
-    delay(duration);
+    delay(1000);
     noTone(alarmPin);
     digitalWrite(ledPin,LOW);
-    delay(duration*2);
+    delay(1000*2);
   }
   delay(1000);
 }
