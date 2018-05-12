@@ -24,7 +24,7 @@ int hazardDelay = 10000000000; //The time in milliseconds until the alarm stops
 int lastHazard;
 int relay1 = 10;
 int relay2 = 9;
-int triggerNumber = 400; //Sensor output required to set off alarm and kill power. Higher for higher threshold, lower for lower threshold.
+int triggerNumber = 500; //Sensor output required to set off alarm and kill power. Higher for higher threshold, lower for lower threshold.
 void setup() {
   Serial.begin(9600);
   pinMode(ledSensePin,OUTPUT);
