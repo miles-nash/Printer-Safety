@@ -1,3 +1,4 @@
+
 /*
 Printer Safety Gadget Arduino code
 Updated code can be found on https://github.com/miles-nash/Printer-Safety/tree/master
@@ -11,73 +12,86 @@ It also decreases the likelyhood of an out of control electrical fire and can he
  or send a letter to Creative Commons, 444 Castro Street, Suite 900,
  Mountain View, California, 94041, USA.
 */
-int time1 = 280;
-int time2 = 40;
-int time3 = 9680;
-int ledSensePin = 11; //led turns on and off the 
+//pins
+int ledSensePin = 11; //led turns on and off the sensor
 int sensorPin = 5;
 int alarmPin = 8;
 int ledPin = 12;
-float voltage,voltageCalc,airQuality = 0;
-bool hazard = false;
-int hazardDelay = 10000000000; //The time in milliseconds until the alarm stops
-int lastHazard;
 int relay1 = 10;
 int relay2 = 9;
+//settings
+int ensureDelay = 1000; //time in milliseconds smoke must be detected for a hazard to be declared.
+int hazardDelay = 10000000000; //The time in milliseconds until the alarm stops.
 int triggerNumber = 500; //Sensor output required to set off alarm and kill power. Higher for higher threshold, lower for lower threshold.
+//placeholders
+int lastHazard;
+bool hazard = false;
+
 void setup() {
   Serial.begin(9600);
   pinMode(ledSensePin,OUTPUT);
   pinMode(alarmPin,OUTPUT);
   pinMode(relay1,OUTPUT);
   pinMode(relay2,OUTPUT);
-  digitalWrite(relay1,LOW); //the relay linked on github is activated by LOW
+  digitalWrite(relay1,LOW); //the relay linked in the BOM is activated by LOW
   digitalWrite(relay2,LOW);//turn on printer
 }
 
 void loop() {
-  //Adapted from a sketch by Cyrille Médard de Chardon (serialC), Christophe Trefois (Trefex)
-  //http://arduinodev.woofex.net/2012/12/01/standalone-sharp-dust-sensor/ 
- ///////////////////////////////////////////////////////////// 
-  digitalWrite(ledSensePin, LOW); //turn on sensor
-  delayMicroseconds(time1);
-  voltage = analogRead(sensorPin);
-  delayMicroseconds(time2);
-  digitalWrite(ledSensePin, HIGH); //turn off sensor
-  delayMicroseconds(time3);
-  Serial.println(voltage);
- ///////////////////////////////////////////////////////////// 
-  if(voltage >= triggerNumber){//if the voltage coming from the sensor is t0o high, a hazard is present
-    hazard = true;
-    lastHazard = millis();
+
+  if(voltage() >= triggerNumber ){//if the voltage coming from the sensor is too high, a hazard may be present
+    delay(ensureDelay);//delay to ensure there is no false possitive
+    if(voltage >= triggerNumber){ //if the sensor still detects smoke, a hazard is declared present
+      hazard = true;
+      lastHazard = millis();
+    }
   }
 
-  if(voltage < triggerNumber - 50 && (millis() - lastHazard) > hazardDelay){//if the hazard stops and a time has passed, stop alarm
+  if(voltage() < triggerNumber - 50 && (millis() - lastHazard) > hazardDelay){//if the hazard stops and a time has passed, stop alarm
     hazard = false;
   }
 
   if(hazard == true){
-    //relay
-    digitalWrite(relay1,HIGH); //disigage relay: Turn off printer ect.
+    digitalWrite(relay1,HIGH); //disigage relay: Turn off printer
     digitalWrite(relay2,HIGH); // must reset safety host to turn on printer
-    tone(alarmPin, 100);//alarm sequence
-    digitalWrite(ledPin,HIGH);
-    delay(1000);
-    noTone(alarmPin);
-    digitalWrite(ledPin,LOW);
-    delay(1000);
-     tone(alarmPin, 100);
-     digitalWrite(ledPin,HIGH);
-    delay(1000);
-    noTone(alarmPin);
-    digitalWrite(ledPin,LOW);
-    delay(1000);
-     tone(alarmPin, 100);
-     digitalWrite(ledPin,HIGH);
-    delay(1000);
-    noTone(alarmPin);
-    digitalWrite(ledPin,LOW);
-    delay(1000*2);
+    alarm(); //sound the alarm
   }
   delay(1000);
+}
+
+float voltage(){
+  //Adapted from a sketch by Cyrille Médard de Chardon (serialC), Christophe Trefois (Trefex)
+  //http://arduinodev.woofex.net/2012/12/01/standalone-sharp-dust-sensor/ 
+  float voltage;
+ ///////////////////////////////////////////////////////////// 
+  digitalWrite(ledSensePin, LOW); //turn on sensor
+  delayMicroseconds(280);
+  voltage = analogRead(sensorPin);
+  delayMicroseconds(40);
+  digitalWrite(ledSensePin, HIGH); //turn off sensor
+  delayMicroseconds(9680);
+  Serial.println(voltage);
+ ///////////////////////////////////////////////////////////// 
+ return voltage;
+}
+
+void alarm(){
+  tone(alarmPin, 100);//alarm sequence
+  digitalWrite(ledPin,HIGH);
+  delay(1000);
+  noTone(alarmPin);
+  digitalWrite(ledPin,LOW);
+  delay(1000);
+  tone(alarmPin, 100);
+  digitalWrite(ledPin,HIGH);
+  delay(1000);
+  noTone(alarmPin);
+  digitalWrite(ledPin,LOW);
+  delay(1000);
+  tone(alarmPin, 100);
+  digitalWrite(ledPin,HIGH);
+  delay(1000);
+  noTone(alarmPin);
+  digitalWrite(ledPin,LOW);
+  delay(1000*2);
 }
